@@ -1,0 +1,78 @@
+---
+import { getCollection } from 'astro:content';
+import { Picture, getImage } from 'astro:assets';
+import Base from '../layouts/Base.astro';
+import { spirals, SLOTS } from '../lib/gallery';
+
+// Emitted only when there are photos (an empty list means no /gallery route at all).
+export async function getStaticPaths() {
+  const entries = await getCollection('gallery');
+  return entries.length ? [{ params: { gallery: 'gallery' } }] : [];
+}
+
+const files = import.meta.glob<{ default: ImageMetadata }>('/src/assets/gallery/*.{jpg,jpeg,png,webp,avif}', { eager: true });
+const entries = await getCollection('gallery');
+const photos = await Promise.all(
+  entries.map(async (e) => {
+    const mod = files[`/src/assets/gallery/${e.data.src}`];
+    if (!mod) throw new Error(`gallery.json: "${e.data.src}" not found in src/assets/gallery/`);
+    const full = await getImage({ src: mod.default, width: 1800, format: 'webp' });
+    const cap = [e.data.caption, e.data.date].filter(Boolean).join(' · ');
+    return { ...e.data, img: mod.default, full: full.src, cap };
+  }),
+);
+const groups = spirals(photos);
+let n = 0;
+---
+<Base title="Gallery · Josue Tapia" description="Places and moments I keep coming back to." current="gallery">
+  <main class="gallery">
+    <div class="page-intro">
+      <p class="label">§4 Gallery</p>
+      <h1>Places and moments <span class="g">I keep coming back to.</span></h1>
+    </div>
+    {groups.map((g) => (
+      <div class="collage">
+        {g.map((p, i) => (
+          <button type="button" class="ph" style={`grid-area:${SLOTS[i]}`} data-full={p.full} data-alt={p.alt} data-cap={p.cap}>
+            <Picture src={p.img} alt={p.alt} formats={['avif', 'webp']} widths={[480, 960, 1600]} sizes="(max-width: 899px) 100vw, 60vw" loading={n++ === 0 ? 'eager' : 'lazy'} />
+          </button>
+        ))}
+        <svg class="spiral" viewBox="0 0 21 13" preserveAspectRatio="none" aria-hidden="true">
+          <path d="M0 13 A13 13 0 0 1 13 0 A8 8 0 0 1 21 8 A5 5 0 0 1 16 13 A3 3 0 0 1 13 10 A2 2 0 0 1 15 8 A1 1 0 0 1 16 9 A1 1 0 0 1 15 10" />
+        </svg>
+      </div>
+    ))}
+    <p class="hint g">Click any photo to open it full screen</p>
+    <dialog id="lightbox" aria-label="Photo viewer">
+      <img alt="" />
+      <p class="lb-cap"></p>
+      <button type="button" class="lb-close" aria-label="Close">×</button>
+    </dialog>
+  </main>
+</Base>
+<script>import '../scripts/lightbox.ts';</script>
+<style>
+  .gallery { padding: 0 34px; }
+  .collage { position: relative; width: 100%; aspect-ratio: 21 / 13; margin-bottom: 55px; display: grid; gap: 6px;
+    grid-template-columns: 13fr 2fr 1fr 5fr; grid-template-rows: 8fr 1fr 1fr 3fr;
+    grid-template-areas: "a b b b" "a f g c" "a f h c" "a d d c"; }
+  .ph { position: relative; padding: 0; border: 0; border-radius: 2px; overflow: hidden; background: #0d1020; cursor: zoom-in; min-width: 0; min-height: 0; }
+  .ph :global(img) { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
+  .ph:focus-visible { outline: 2px solid var(--orange); outline-offset: 2px; }
+  .spiral { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+  .spiral path { fill: none; stroke: var(--ink); stroke-opacity: 0.6; stroke-width: 1.2; vector-effect: non-scaling-stroke; }
+  .hint { font-style: italic; margin-bottom: 21px; }
+  dialog { border: 0; padding: 0; background: transparent; max-width: 100vw; max-height: 100vh; width: 100vw; height: 100vh; color: #fff; }
+  dialog::backdrop { background: rgba(0, 0, 0, 0.9); }
+  dialog[open] { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 13px; }
+  dialog img { max-width: 92vw; max-height: 80vh; object-fit: contain; }
+  .lb-cap { font-style: italic; min-height: 1.4em; }
+  .lb-close { position: absolute; top: 13px; right: 21px; background: none; border: 0; color: #fff; font-size: 34px; cursor: pointer; }
+  .lb-close:focus-visible { outline: 2px solid var(--orange); }
+  @media (max-width: 899px) {
+    .gallery { padding: 0 16px; }
+    .collage { display: flex; flex-direction: column; aspect-ratio: auto; gap: 8px; margin-bottom: 34px; }
+    .ph { aspect-ratio: 4 / 3; width: 100%; }
+    .spiral { display: none; }
+  }
+</style>
