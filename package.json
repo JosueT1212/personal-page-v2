@@ -7,7 +7,8 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "test": "vitest run"
+    "test": "vitest run",
+    "test:build": "astro build && vitest run -c vitest.build.config.ts"
   },
   "dependencies": {
     "@fontsource-variable/newsreader": "^5.3.0",
@@ -19,6 +20,7 @@
   },
   "devDependencies": {
     "@types/culori": "^4.0.1",
+    "@types/node": "^26.6.5",
     "@types/suncalc": "^1.9.2",
     "suncalc": "^2.1.1",
     "vitest": "^5.0.5"
