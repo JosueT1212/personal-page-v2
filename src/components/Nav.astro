@@ -5,8 +5,6 @@ const { current, variant = 'leader' } = Astro.props;
 const hasGallery = (await getCollection('gallery')).length > 0;
 const NUMERALS = ['I', 'II', 'III', 'IV'];
 const links = [
-  ['writing', 'Writing'],
-  ['open-questions', 'Open questions'],
   ['bookshelf', 'Bookshelf'],
   ['gallery', 'Gallery'],
 ].filter(([slug]) => slug !== 'gallery' || hasGallery);

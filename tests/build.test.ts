@@ -6,10 +6,10 @@ test('no gallery while empty', () => {
   expect(existsSync('dist/gallery/index.html')).toBe(false);
   expect(html('index.html')).not.toMatch(/href="\/gallery"/);
 });
-test('unpublished posts have no routes and are not linked', () => {
-  expect(existsSync('dist/writing/equivariance-first-principles/index.html')).toBe(false);
-  expect(html('writing/index.html')).not.toMatch(/href="\/writing\/[a-z]/);
-  expect(html('writing/index.html')).toContain('In progress');
+test('writing and open questions are paused: no routes, no links', () => {
+  expect(existsSync('dist/writing')).toBe(false);
+  expect(existsSync('dist/open-questions')).toBe(false);
+  for (const p of ['index.html', 'bookshelf/index.html', 'now/index.html']) expect(html(p)).not.toMatch(/href="\/(writing|open-questions)/);
 });
 test('contact and footer', () => {
   const h = html('index.html');
@@ -27,7 +27,7 @@ test('inlined theme script sets data-phase', () => {
   expect(['dawn', 'midday', 'afternoon', 'night']).toContain(root.dataset.phase);
 });
 test('all pages built', () => {
-  for (const p of ['index.html', 'field/index.html', 'writing/index.html', 'open-questions/index.html', 'bookshelf/index.html', 'now/index.html', '404.html', 'CNAME']) expect(existsSync(`dist/${p}`)).toBe(true);
+  for (const p of ['index.html', 'field/index.html', 'bookshelf/index.html', 'now/index.html', '404.html', 'CNAME']) expect(existsSync(`dist/${p}`)).toBe(true);
 });
 test('homepage nav is plain', () => {
   const n = nav('index.html');
@@ -35,9 +35,9 @@ test('homepage nav is plain', () => {
   expect(n).not.toMatch(/leader|>\s*(I|II|III)\s*</);
 });
 test('secondary nav is leader style with numerals', () => {
-  const n = nav('open-questions/index.html');
+  const n = nav('bookshelf/index.html');
   expect(n).toContain('leader-row');
-  for (const r of ['I', 'II', 'III']) expect(n).toMatch(new RegExp(`leader-num[^>]*>${r}<`));
+  for (const r of ['I']) expect(n).toMatch(new RegExp(`leader-num[^>]*>${r}<`));
 });
 test('understood questions reference published posts', () => {
   const qs = JSON.parse(readFileSync('src/data/open-questions.json', 'utf8')) as { status: string; post?: string }[];

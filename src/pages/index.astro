@@ -3,8 +3,6 @@ import Base from '../layouts/Base.astro';
 import Shelf from '../components/Shelf.astro';
 import Hero from '../components/home/Hero.astro';
 import About from '../components/home/About.astro';
-import WritingSquare from '../components/home/WritingSquare.astro';
-import OpenQuestionsSquare from '../components/home/OpenQuestionsSquare.astro';
 import GallerySquare from '../components/home/GallerySquare.astro';
 import GlyphSquares from '../components/home/GlyphSquares.astro';
 import Spiral from '../components/home/Spiral.astro';
@@ -13,8 +11,9 @@ import Spiral from '../components/home/Spiral.astro';
   <main class="fib">
     <Hero />
     <About />
-    <WritingSquare />
-    <OpenQuestionsSquare />
+    <!-- Writing (5) and Open questions (3) are paused: empty squares keep the tiling. Restore WritingSquare / OpenQuestionsSquare and unprefix src/pages/_writing, _open-questions.astro. -->
+    <div class="cell writing" aria-hidden="true"><span class="n">5</span></div>
+    <div class="cell oq" aria-hidden="true"><span class="n">3</span></div>
     <GallerySquare />
     <GlyphSquares />
     <Spiral />
@@ -64,14 +63,13 @@ import Spiral from '../components/home/Spiral.astro';
       aspect-ratio: auto;
       grid-template-columns: 1fr 1fr;
       grid-template-rows: none;
-      grid-template-areas: "hero hero" "about about" "writing writing" "oq oq" "gal gal" "now end";
+      grid-template-areas: "hero hero" "about about" "gal gal" "now end";
     }
     /* Visible overflow lets aspect-ratio act as a minimum: content may grow the card. */
     :where(.fib) .cell { overflow: visible; min-height: auto; border-left: none; }
     :where(.fib) .hero { aspect-ratio: 13 / 8; overflow: hidden; }
     :where(.fib) .about { aspect-ratio: 8 / 5; }
-    :where(.fib) .writing { aspect-ratio: 5 / 3; }
-    :where(.fib) .oq { aspect-ratio: 3 / 2; }
+    :where(.fib) .writing, :where(.fib) .oq { display: none; }
     :where(.fib) .gal { aspect-ratio: 2 / 1; }
     :where(.fib) .now, :where(.fib) .end { aspect-ratio: 1 / 1; }
     :where(.fib) .end { border-left: 1px solid var(--line); }
