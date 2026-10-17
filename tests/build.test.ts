@@ -27,7 +27,7 @@ test('inlined theme script sets data-phase', () => {
   expect(['dawn', 'midday', 'afternoon', 'night']).toContain(root.dataset.phase);
 });
 test('all pages built', () => {
-  for (const p of ['index.html', 'field/index.html', 'writing/index.html', 'open-questions/index.html', 'bookshelf/index.html', 'now/index.html', 'CNAME']) expect(existsSync(`dist/${p}`)).toBe(true);
+  for (const p of ['index.html', 'field/index.html', 'writing/index.html', 'open-questions/index.html', 'bookshelf/index.html', 'now/index.html', '404.html', 'CNAME']) expect(existsSync(`dist/${p}`)).toBe(true);
 });
 test('homepage nav is plain', () => {
   const n = nav('index.html');

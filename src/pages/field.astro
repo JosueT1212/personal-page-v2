@@ -5,18 +5,21 @@ import { GROUPS } from '../lib/field';
 const sub = (g: string) => g[0] + String.fromCharCode(0x2080 + Number(g[1]));
 ---
 <Base title="Equivariant field · Josue Tapia" description="A live equivariant vector field: f(g·x) = g·f(x)." bare>
-  <Field full />
-  <a class="back" href="/">← Josue Tapia</a>
-  <form class="controls">
-    <fieldset>
-      <legend>Group</legend>
-      {GROUPS.map((g) => (
-        <label><input type="radio" name="group" value={g} checked={g === 'D6'} /><span>{sub(g)}</span></label>
-      ))}
-    </fieldset>
-    <label class="sigma">σ <input type="range" name="sigma" min="0.04" max="0.18" step="0.01" value="0.09" /></label>
-  </form>
-  <p class="cap"><i>f(g·x) = g·f(x)</i></p>
+  <main>
+    <h1 class="vh">Equivariant vector field</h1>
+    <Field full />
+    <a class="back" href="/">← Josue Tapia</a>
+    <form class="controls">
+      <fieldset>
+        <legend>Group</legend>
+        {GROUPS.map((g) => (
+          <label><input type="radio" name="group" value={g} checked={g === 'D6'} /><span>{sub(g)}</span></label>
+        ))}
+      </fieldset>
+      <label class="sigma">σ <input type="range" name="sigma" aria-label="Kernel width σ" min="0.04" max="0.18" step="0.01" value="0.09" /></label>
+    </form>
+    <p class="cap"><i>f(g·x) = g·f(x)</i></p>
+  </main>
 </Base>
 
 <style>
@@ -25,7 +28,7 @@ const sub = (g: string) => g[0] + String.fromCharCode(0x2080 + Number(g[1]));
   .back:hover { color: #fff; }
   .controls { top: 28px; right: 34px; display: flex; flex-direction: column; align-items: flex-end; gap: 13px; }
   fieldset { border: 0; display: flex; gap: 13px; }
-  legend { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+  legend, .vh { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
   fieldset label { cursor: pointer; font-style: italic; }
   fieldset input { position: absolute; opacity: 0; pointer-events: none; }
   fieldset input:checked + span { color: #fff; border-bottom: 1px solid #fff; }

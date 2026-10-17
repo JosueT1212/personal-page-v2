@@ -2,7 +2,7 @@
 import { getCollection } from 'astro:content';
 import { Picture, getImage } from 'astro:assets';
 import Base from '../layouts/Base.astro';
-import { spirals, SLOTS } from '../lib/gallery';
+import { spirals, SLOTS, resolvePhoto } from '../lib/gallery';
 
 // Emitted only when there are photos (an empty list means no /gallery route at all).
 export async function getStaticPaths() {
@@ -10,12 +10,11 @@ export async function getStaticPaths() {
   return entries.length ? [{ params: { gallery: 'gallery' } }] : [];
 }
 
-const files = import.meta.glob<{ default: ImageMetadata }>('/src/assets/gallery/*.{jpg,jpeg,png,webp,avif}', { eager: true });
+const files = import.meta.glob<{ default: ImageMetadata }>('/src/assets/gallery/*.{[jJ][pP][gG],[jJ][pP][eE][gG],[pP][nN][gG],[wW][eE][bB][pP],[aA][vV][iI][fF]}', { eager: true });
 const entries = await getCollection('gallery');
 const photos = await Promise.all(
   entries.map(async (e) => {
-    const mod = files[`/src/assets/gallery/${e.data.src}`];
-    if (!mod) throw new Error(`gallery.json: "${e.data.src}" not found in src/assets/gallery/`);
+    const mod = resolvePhoto(e.data.src, files);
     const full = await getImage({ src: mod.default, width: 1800, format: 'webp' });
     const cap = [e.data.caption, e.data.date].filter(Boolean).join(' · ');
     return { ...e.data, img: mod.default, full: full.src, cap };
