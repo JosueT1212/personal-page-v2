@@ -1,0 +1,20 @@
+---
+const { current } = Astro.props;
+const links = [
+  ['writing', 'Writing'],
+  ['open-questions', 'Open questions'],
+  ['bookshelf', 'Bookshelf'],
+  ['gallery', 'Gallery'], // Task 3: hide when gallery collection is empty
+];
+---
+<header>
+  <nav>
+    {links.map(([slug, name]) => (
+      <a href={`/${slug}`} style={slug === current ? 'color:var(--label)' : undefined}>{name}</a>
+    ))}
+  </nav>
+</header>
+<style>
+  header { display: flex; justify-content: flex-end; text-align: right; margin-bottom: 55px; }
+  nav { display: flex; flex-direction: column; }
+</style>
