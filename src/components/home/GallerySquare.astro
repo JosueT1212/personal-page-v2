@@ -11,10 +11,11 @@ const Tag = empty ? 'div' : 'a';
 </Tag>
 
 <style>
-  .gal { padding: 13px; display: flex; flex-direction: column; justify-content: space-between; }
+  .gal { padding: clamp(8px, 0.8vw, 13px); font-size: clamp(13px, 1vw, 16.5px); display: flex; flex-direction: column; justify-content: space-between; }
   .label { margin: 0; }
-  .mini { display: grid; grid-template-columns: 5fr 3fr; grid-template-rows: 3fr 1fr 1fr; grid-template-areas: "a b" "a c" "a d"; gap: 2px; width: 70%; aspect-ratio: 8 / 5; margin-top: 4px; }
+  .mini { display: grid; grid-template-columns: 5fr 3fr; grid-template-rows: 3fr 1fr 1fr; grid-template-areas: "a b" "a c" "a d"; gap: 2px; width: 70%; aspect-ratio: 8 / 5; margin-top: 4px; min-height: 0; flex: 0 1 auto; }
   .mini i { background: var(--ink); opacity: 0.28; border-radius: 1px; }
   .mini i:first-child { opacity: 0.5; }
+  @media (max-width: 899px) { .gal { padding: 21px; font-size: 16.5px; } .mini { width: 40%; } }
   a.gal:hover .mini i, a.gal:focus-visible .mini i { opacity: 0.7; }
 </style>

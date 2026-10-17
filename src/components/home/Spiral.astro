@@ -5,12 +5,13 @@
 <style>
   .spiral { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
   path { fill: none; stroke: var(--ink); stroke-opacity: 0.6; stroke-width: 1.2; vector-effect: non-scaling-stroke; }
-  /* Path runs 13-square → 1-square; offset -1 → 0 reveals from the path's end, so it grows from the 1-square outward.
-     Dasharray lives only in the keyframes: once the animation ends the stroke is plain and complete. */
-  @media (prefers-reduced-motion: no-preference) { path { animation: draw 1.6s ease-out; } }
+  /* Draw-in from the 1-square outward as a radial reveal centred on the spiral's eye (≈15.4, 9.6 of 21×13).
+     A stroke-dashoffset draw-in was tried first, but Chrome mis-scales dashes when pathLength meets
+     non-scaling-stroke (the path renders as scattered dashes mid-animation), so the reveal clips instead. */
+  @media (prefers-reduced-motion: no-preference) { .spiral { animation: draw 1.6s ease-out; } }
   @keyframes draw {
-    from { stroke-dasharray: 1; stroke-dashoffset: -1; }
-    to { stroke-dasharray: 1; stroke-dashoffset: 0; }
+    from { clip-path: circle(0% at 73.3% 73.8%); }
+    to { clip-path: circle(110% at 73.3% 73.8%); }
   }
   @media (max-width: 899px) { .spiral { display: none; } }
 </style>

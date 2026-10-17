@@ -12,9 +12,9 @@
 <script>import '../../scripts/tile-lost.ts';</script>
 
 <style>
-  .about { padding: 34px 34px 34px 55px; display: flex; flex-direction: column; }
-  .lead { font-size: clamp(21px, 1.9vw, 32px); font-weight: 500; letter-spacing: -0.01em; line-height: 1.15; max-width: 16em; }
-  .rows { margin-top: auto; margin-bottom: 21px; padding-top: 34px; display: grid; grid-template-columns: auto 1fr; column-gap: 21px; row-gap: 13px; font-size: clamp(15px, 1.1vw, 18px); }
+  .about { padding: clamp(21px, 2vw, 34px) clamp(21px, 2vw, 34px) clamp(13px, 2vw, 34px) clamp(21px, 3.3vw, 55px); display: flex; flex-direction: column; }
+  .lead { font-size: clamp(17px, 1.9vw, 32px); font-weight: 500; letter-spacing: -0.01em; line-height: 1.15; max-width: 16em; }
+  .rows { margin-top: auto; margin-bottom: clamp(0px, 1.25vw, 21px); padding-top: clamp(8px, 4vw - 33px, 34px); display: grid; grid-template-columns: auto 1fr; column-gap: 21px; row-gap: clamp(5px, 0.8vw, 13px); font-size: clamp(13px, 1.1vw, 18px); }
   .i { color: var(--label); }
   .lim { display: inline-flex; flex-direction: column; align-items: center; line-height: 1; }
   .lim small { font-size: 11px; font-style: italic; }

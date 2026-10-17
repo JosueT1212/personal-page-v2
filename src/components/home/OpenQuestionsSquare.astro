@@ -16,9 +16,9 @@ const at = new Map(nodes.map((n) => [n.k, n]));
 </a>
 
 <style>
-  .oq { padding: 13px 13px 6px; }
+  .oq { padding: 13px 13px 6px; display: flex; flex-direction: column; }
   .label { margin: 0; }
-  svg { width: 100%; height: calc(100% - 20px); display: block; }
+  svg { width: 100%; flex: 1; min-height: 0; display: block; }
   line { stroke: var(--ink); stroke-opacity: 0.35; stroke-width: 0.8; }
   .p { fill: var(--label); }
   .c { fill: var(--bg); stroke: var(--ink); stroke-width: 0.9; }

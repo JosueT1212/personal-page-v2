@@ -9,14 +9,17 @@ const posts = latest(await getCollection('posts'), 3).map(({ data }) => ({
 <a class="cell writing" href="/writing">
   <p class="label">§2 Writing</p>
   {posts.map((p) => (
-    <div class="post">{p.title}{p.sub && <><br /><span class="g">{p.sub}</span></>}</div>
+    <div class="post">{p.title}{p.sub && <span class="sub g">{p.sub}</span>}</div>
   ))}
   <span class="open g" aria-hidden="true">Open →</span>
   <span class="n" aria-hidden="true">5</span>
 </a>
 
 <style>
-  .writing { padding: clamp(13px, 2vw, 34px); }
-  .post { margin-bottom: 21px; }
-  @media (max-width: 899px) { .writing { padding: 34px 21px 34px; } }
+  .writing { padding: clamp(13px, 2vw, 34px); font-size: clamp(13px, 1vw, 16.5px); }
+  .post { margin-bottom: clamp(13px, 1.25vw, 21px); }
+  .sub { display: block; }
+  /* The 5-square can't hold three summaries until ~1280px; titles + status stay. */
+  @media (min-width: 900px) and (max-width: 1279px) { .sub { display: none; } }
+  @media (max-width: 899px) { .writing { padding: 34px 21px 34px; font-size: 16.5px; } }
 </style>
