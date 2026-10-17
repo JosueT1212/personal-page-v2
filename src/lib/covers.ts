@@ -40,7 +40,7 @@ export const MOTIFS: Record<MotifName, Motif> = {
     },
   },
   primeSpiral: {
-    family: 'free', bg: '#0b0b0b',
+    family: 'geometric', bg: '#0b0b0b',
     draw(c, W, H) {
       let x = 0, y = 0, dx = 1, dy = 0, seg = 1, st = 0, turn = 0;
       const cell = 5, ox = W / 2, oy = H * 0.58;
