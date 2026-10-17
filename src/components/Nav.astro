@@ -1,11 +1,13 @@
 ---
+import { getCollection } from 'astro:content';
 const { current } = Astro.props;
+const hasGallery = (await getCollection('gallery')).length > 0;
 const links = [
   ['writing', 'Writing'],
   ['open-questions', 'Open questions'],
   ['bookshelf', 'Bookshelf'],
-  ['gallery', 'Gallery'], // Task 3: hide when gallery collection is empty
-];
+  ['gallery', 'Gallery'],
+].filter(([slug]) => slug !== 'gallery' || hasGallery);
 ---
 <header>
   <nav>
