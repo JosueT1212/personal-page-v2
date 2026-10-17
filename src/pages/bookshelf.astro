@@ -1,0 +1,18 @@
+---
+import Base from '../layouts/Base.astro';
+import Shelf from '../components/Shelf.astro';
+---
+<Base title="Bookshelf · Josue Tapia" description="What I'm reading and what stayed with me." current="bookshelf">
+  <main>
+    <p class="label">§5 Bookshelf</p>
+    <h1 class="lead">What I’m reading <span class="g">and what stayed with me.</span></h1>
+    <Shelf variant="page" />
+  </main>
+</Base>
+
+<style>
+  main { padding: 55px 34px 89px; }
+  .label { color: var(--gray); font-style: italic; margin: 0 0 13px; }
+  .lead { font-size: 44px; line-height: 1.1; letter-spacing: -0.01em; font-weight: 500; max-width: 16em; margin: 0 0 34px; }
+  @media (max-width: 899px) { main { padding: 34px 16px 55px; } .lead { font-size: 34px; } }
+</style>

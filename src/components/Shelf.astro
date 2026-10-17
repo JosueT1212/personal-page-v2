@@ -1,0 +1,39 @@
+---
+import { getCollection } from 'astro:content';
+import BookCover from './BookCover.astro';
+interface Props { variant: 'home' | 'page'; }
+const { variant } = Astro.props;
+const books = (await getCollection('books')).map((b) => b.data);
+const CATS = [['mathematics', 'Mathematics'], ['chess', 'Chess'], ['beyond', 'Beyond']] as const;
+const groups = CATS.map(([k, label]) => ({ label, items: books.filter((b) => b.category === k) })).filter((g) => g.items.length);
+const size = variant === 'home' ? 'thumb' : 'large';
+---
+{groups.map((g) => (
+  <section class={`shelf ${variant}`}>
+    {variant === 'page' && <h2>{g.label}</h2>}
+    <div class="items">
+      {g.items.map((b) => (
+        <div class="book">
+          <BookCover motif={b.motif} title={b.title} size={size} />
+          <div class="meta">
+            {b.title}<br />
+            <span class="g">{b.author}{b.status === 'reading' && <> · reading</>}</span>
+          </div>
+        </div>
+      ))}
+    </div>
+  </section>
+))}
+<script>import '../scripts/covers-client.ts';</script>
+
+<style>
+  .items { display: grid; }
+  .home .items { grid-template-columns: repeat(3, 1fr); column-gap: 55px; row-gap: 21px; }
+  .page .items { grid-template-columns: repeat(auto-fill, minmax(233px, 1fr)); gap: 34px 55px; }
+  .home .book { display: grid; grid-template-columns: 42px 1fr; column-gap: 16px; align-items: center; }
+  .page .book { display: grid; grid-template-columns: 144px 1fr; column-gap: 21px; align-items: end; }
+  .meta { font-size: 17px; }
+  .meta .g { font-style: italic; }
+  h2 { font-size: 21px; font-weight: 500; margin: 55px 0 21px; }
+  @media (max-width: 899px) { .home .items { grid-template-columns: 1fr; } }
+</style>

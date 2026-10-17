@@ -1,0 +1,14 @@
+---
+interface Props { motif: { name: string; seed?: number }; title: string; size: 'thumb' | 'large'; }
+const { motif, title, size } = Astro.props;
+---
+<div class={`cover ${size}`} role="img" aria-label={`Cover of ${title}`}>
+  <canvas data-motif={JSON.stringify(motif)}></canvas>
+</div>
+
+<style>
+  .cover { aspect-ratio: 8 / 13; position: relative; overflow: hidden; }
+  .thumb { width: 42px; }
+  .large { width: 144px; }
+  canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
+</style>
