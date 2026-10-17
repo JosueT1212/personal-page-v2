@@ -1,0 +1,63 @@
+import type { Phase } from './palette';
+
+export type Vec = [number, number];
+export type Group = 'C4' | 'D4' | 'C6' | 'D6' | 'D8';
+export const GROUPS: Group[] = ['C4', 'D4', 'C6', 'D6', 'D8'];
+
+/** Orbit of p about c. Index 0 is p itself; D_n interleaves each rotation with its reflection (as in the mock). */
+export function orbit(p: Vec, c: Vec, g: Group): Vec[] {
+  const n = Number(g.slice(1)), dihedral = g[0] === 'D';
+  const [cx, cy] = c, vx = p[0] - cx, vy = p[1] - cy, out: Vec[] = [];
+  for (let k = 0; k < n; k++) {
+    const a = (2 * Math.PI * k) / n, co = Math.cos(a), s = Math.sin(a);
+    out.push([cx + co * vx - s * vy, cy + s * vx + co * vy]);
+    if (dihedral) out.push([cx + co * vx + s * vy, cy + s * vx - co * vy]);
+  }
+  return out;
+}
+
+/** Σ (q − x)·exp(−‖x−q‖²/2σ²) = −∇L · σ² for L = −Σ exp(−‖x−q‖²/2σ²). */
+export function grad(x: Vec, pts: Vec[], sigma: number): Vec {
+  const k = 1 / (2 * sigma * sigma);
+  let gx = 0, gy = 0;
+  for (const q of pts) {
+    const dx = q[0] - x[0], dy = q[1] - x[1], w = Math.exp(-(dx * dx + dy * dy) * k);
+    gx += dx * w; gy += dy * w;
+  }
+  return [gx, gy];
+}
+
+export const gridSpacing = (cssWidth: number): number => (cssWidth >= 900 ? 24 : 34);
+
+/** Idle drift of the orbit seed point; t in seconds. */
+export const lissajous = (t: number, c: Vec, w: number, h: number): Vec =>
+  [c[0] + 0.25 * w * Math.sin(0.13 * t), c[1] + 0.18 * h * Math.sin(0.17 * t + 1)];
+
+/** Background glows per phase. x of W, y of H, r of orbit radius R; color is "r,g,b", alpha the center opacity. All source-over. */
+export type Glow = { x: number; y: number; r: number; color: string; alpha: number };
+export const GLOWS: Record<Phase, Glow[]> = {
+  // Verbatim from the dawn mock (cy = 0.42H).
+  dawn: [
+    { x: 0.5, y: 0.525, r: 1.9, color: '255,128,60', alpha: 0.62 },
+    { x: 0.5, y: 0.42, r: 0.75, color: '255,150,70', alpha: 0.55 },
+    { x: 0.5, y: 0.42, r: 0.3, color: '255,214,150', alpha: 0.6 },
+  ],
+  // White sun: higher, brighter core. Pending Josue's review (Task 10).
+  midday: [
+    { x: 0.5, y: 0.32, r: 1.7, color: '255,250,240', alpha: 0.26 },
+    { x: 0.5, y: 0.24, r: 0.7, color: '255,253,248', alpha: 0.45 },
+    { x: 0.5, y: 0.24, r: 0.26, color: '255,255,255', alpha: 0.85 },
+  ],
+  // Golden, lower-right. Pending review.
+  afternoon: [
+    { x: 0.6, y: 0.62, r: 1.8, color: '255,190,90', alpha: 0.5 },
+    { x: 0.64, y: 0.52, r: 0.72, color: '255,196,100', alpha: 0.5 },
+    { x: 0.64, y: 0.52, r: 0.28, color: '255,228,170', alpha: 0.55 },
+  ],
+  // Orange-pink ember, low and dim. Pending review.
+  night: [
+    { x: 0.5, y: 0.78, r: 1.7, color: '255,110,90', alpha: 0.4 },
+    { x: 0.5, y: 0.7, r: 0.6, color: '255,118,92', alpha: 0.35 },
+    { x: 0.5, y: 0.7, r: 0.22, color: '255,170,140', alpha: 0.4 },
+  ],
+};

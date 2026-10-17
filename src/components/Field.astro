@@ -1,0 +1,19 @@
+---
+import type { Group } from '../lib/field';
+interface Props { group?: Group; full?: boolean }
+const { group = 'D6', full = false } = Astro.props;
+---
+<canvas class:list={['field', { full }]} data-field data-group={group} aria-hidden="true"></canvas>
+
+<style>
+  .field { position: absolute; inset: 0; width: 100%; height: 100%; display: block; background: var(--hero); }
+  .field.full { position: fixed; width: 100vw; height: 100dvh; }
+</style>
+
+<script>
+  import { mountField, type FieldHandle } from '../scripts/field-canvas';
+  import type { Group } from '../lib/field';
+  for (const c of document.querySelectorAll<HTMLCanvasElement & { field?: FieldHandle }>('canvas[data-field]')) {
+    c.field ??= mountField(c, { group: c.dataset.group as Group });
+  }
+</script>

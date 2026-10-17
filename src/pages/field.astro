@@ -1,0 +1,53 @@
+---
+import Base from '../layouts/Base.astro';
+import Field from '../components/Field.astro';
+import { GROUPS } from '../lib/field';
+const sub = (g: string) => g[0] + String.fromCharCode(0x2080 + Number(g[1]));
+---
+<Base title="Equivariant field · Josue Tapia" description="A live equivariant vector field: f(g·x) = g·f(x)." bare>
+  <Field full />
+  <a class="back" href="/">← Josue Tapia</a>
+  <form class="controls">
+    <fieldset>
+      <legend>Group</legend>
+      {GROUPS.map((g) => (
+        <label><input type="radio" name="group" value={g} checked={g === 'D6'} /><span>{sub(g)}</span></label>
+      ))}
+    </fieldset>
+    <label class="sigma">σ <input type="range" name="sigma" min="0.04" max="0.18" step="0.01" value="0.09" /></label>
+  </form>
+  <p class="cap"><i>f(g·x) = g·f(x)</i></p>
+</Base>
+
+<style>
+  .back, .controls, .cap { position: fixed; z-index: 1; color: rgba(255, 255, 255, 0.78); }
+  .back { top: 28px; left: 34px; font-style: italic; }
+  .back:hover { color: #fff; }
+  .controls { top: 28px; right: 34px; display: flex; flex-direction: column; align-items: flex-end; gap: 13px; }
+  fieldset { border: 0; display: flex; gap: 13px; }
+  legend { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+  fieldset label { cursor: pointer; font-style: italic; }
+  fieldset input { position: absolute; opacity: 0; pointer-events: none; }
+  fieldset input:checked + span { color: #fff; border-bottom: 1px solid #fff; }
+  fieldset input:focus-visible + span { outline: 2px solid var(--orange); outline-offset: 2px; }
+  .sigma { display: flex; align-items: center; gap: 8px; font-style: italic; }
+  .sigma input { accent-color: #fff; width: 144px; }
+  .cap { left: 34px; bottom: 34px; font-size: 21px; }
+  @media (max-width: 899px) {
+    .back { left: 16px; }
+    .controls { right: 16px; }
+    .cap { left: 16px; bottom: 21px; }
+  }
+</style>
+
+<script>
+  import type { FieldHandle } from '../scripts/field-canvas';
+  import type { Group } from '../lib/field';
+  const form = document.querySelector<HTMLFormElement>('form.controls')!;
+  const handle = () => document.querySelector<HTMLCanvasElement & { field?: FieldHandle }>('canvas[data-field]')?.field;
+  form.addEventListener('input', (e) => {
+    const el = e.target as HTMLInputElement;
+    if (el.name === 'group') handle()?.setGroup(el.value as Group);
+    if (el.name === 'sigma') handle()?.setSigma(Number(el.value));
+  });
+</script>
