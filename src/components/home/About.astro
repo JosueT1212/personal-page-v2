@@ -1,0 +1,23 @@
+<section class="cell about">
+  <p class="label">§1 About</p>
+  <p class="lead">Data Science and Mathematics at ITESM. <span class="g">I love researching and programming stuff.</span></p>
+  <div class="rows">
+    <span class="i">a₁</span><span>Got a bit obsessed <span class="g">with math, physics and competitive programming</span></span>
+    <span class="i">a₂</span><span>AI Engineer Intern <span class="g">at TRUE</span></span>
+    <span class="i">a₃</span><span>Quantum physics ML research <span class="g">— trying to understand a bit of quantum physics</span> <canvas id="lost" width="72" height="72" title="I’m going crazy"></canvas></span>
+    <span class="i lim"><span>lim</span><small>n→∞</small></span><span class="g">a<sub>n</sub> = ?</span>
+  </div>
+  <span class="n">8</span>
+</section>
+<script>import '../../scripts/tile-lost.ts';</script>
+
+<style>
+  .about { padding: 34px 34px 34px 55px; display: flex; flex-direction: column; }
+  .lead { font-size: clamp(21px, 1.9vw, 32px); font-weight: 500; letter-spacing: -0.01em; line-height: 1.15; max-width: 16em; }
+  .rows { margin-top: auto; margin-bottom: 21px; padding-top: 34px; display: grid; grid-template-columns: auto 1fr; column-gap: 21px; row-gap: 13px; font-size: clamp(15px, 1.1vw, 18px); }
+  .i { color: var(--label); }
+  .lim { display: inline-flex; flex-direction: column; align-items: center; line-height: 1; }
+  .lim small { font-size: 11px; font-style: italic; }
+  #lost { width: 30px; height: 30px; display: inline-block; vertical-align: -8px; margin-left: 6px; }
+  @media (max-width: 899px) { .about { padding: 34px 21px 21px; } .lead { font-size: 26px; } .rows { font-size: 16.5px; } }
+</style>

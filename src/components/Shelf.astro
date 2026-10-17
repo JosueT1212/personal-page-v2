@@ -5,7 +5,9 @@ interface Props { variant: 'home' | 'page'; }
 const { variant } = Astro.props;
 const books = (await getCollection('books')).map((b) => b.data);
 const CATS = [['mathematics', 'Mathematics'], ['chess', 'Chess'], ['beyond', 'Beyond']] as const;
-const groups = CATS.map(([k, label]) => ({ label, items: books.filter((b) => b.category === k) })).filter((g) => g.items.length);
+const byCat = CATS.map(([k, label]) => ({ label, items: books.filter((b) => b.category === k) }));
+// Home: one continuous grid (category order, no headings). Page: one section per non-empty category.
+const groups = variant === 'home' ? [{ label: '', items: byCat.flatMap((g) => g.items) }] : byCat.filter((g) => g.items.length);
 const size = variant === 'home' ? 'thumb' : 'large';
 ---
 {groups.map((g) => (

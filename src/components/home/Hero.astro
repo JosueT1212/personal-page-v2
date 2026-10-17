@@ -1,0 +1,18 @@
+---
+import Field from '../Field.astro';
+---
+<a class="cell hero" href="/field">
+  <Field />
+  <div class="cap"><h1>Josue <i>Tapia</i></h1></div>
+  <span class="open">Open →</span>
+  <span class="n">13</span>
+</a>
+
+<style>
+  .hero { border: none; background: var(--hero); }
+  .cap { position: absolute; left: 34px; right: 34px; bottom: 34px; color: #fff; pointer-events: none; }
+  h1 { font-size: clamp(48px, 9vw, 120px); font-weight: 500; letter-spacing: -0.025em; line-height: 0.92; }
+  h1 i { font-weight: 400; }
+  .hero .n, .hero .open { color: rgba(255, 255, 255, 0.6); }
+  @media (max-width: 899px) { .cap { left: 21px; right: 21px; bottom: 21px; } }
+</style>

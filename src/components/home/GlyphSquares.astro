@@ -1,0 +1,25 @@
+<div class="cell now">
+  <a class="sym" href="/now" aria-label="Now">φ</a>
+  <button class="phase" type="button" aria-label="Change theme: auto"></button>
+  <span class="n">1</span>
+</div>
+<a class="cell end sym" href="mailto:josuetapiahernandez@gmail.com" aria-label="Email">∎<span class="n">1</span></a>
+
+<script>
+  import { readOverride } from '../../lib/theme';
+  const b = document.querySelector<HTMLButtonElement>('button.phase');
+  const label = () => b?.setAttribute('aria-label', `Change theme: ${readOverride() ?? 'auto'}`);
+  b?.addEventListener('click', () => { (window as any).__cycleTheme?.(); label(); });
+  label();
+</script>
+
+<style>
+  .sym { display: flex; align-items: center; justify-content: center; font-size: 30px; font-style: italic; color: var(--label); }
+  .now .sym { position: absolute; inset: 0; }
+  .now .sym:focus-visible { outline-offset: -2px; }
+  .n { top: 5px; right: 8px; font-size: 11px; }
+  .phase { position: absolute; right: 0; bottom: 0; width: 21px; height: 21px; border: 0; background: none; cursor: pointer; }
+  .phase::after { content: ''; position: absolute; right: 8px; bottom: 8px; width: 5px; height: 5px; border-radius: 50%; background: var(--label); opacity: 0.6; }
+  .phase:hover::after, .phase:focus-visible::after { opacity: 1; }
+  .phase:focus-visible { outline-offset: -2px; }
+</style>

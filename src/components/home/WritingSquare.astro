@@ -1,0 +1,22 @@
+---
+import { getCollection } from 'astro:content';
+import { latest, STATUS_LABEL } from '../../lib/content';
+const posts = latest(await getCollection('posts'), 3).map(({ data }) => ({
+  title: data.title,
+  sub: [STATUS_LABEL[data.status], data.summary].filter(Boolean).join(' · '),
+}));
+---
+<a class="cell writing" href="/writing">
+  <p class="label">§2 Writing</p>
+  {posts.map((p) => (
+    <div class="post">{p.title}{p.sub && <><br /><span class="g">{p.sub}</span></>}</div>
+  ))}
+  <span class="open g">Open →</span>
+  <span class="n">5</span>
+</a>
+
+<style>
+  .writing { padding: clamp(13px, 2vw, 34px); }
+  .post { margin-bottom: 21px; }
+  @media (max-width: 899px) { .writing { padding: 34px 21px 34px; } }
+</style>

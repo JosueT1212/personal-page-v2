@@ -1,6 +1,80 @@
 ---
 import Base from '../layouts/Base.astro';
+import Shelf from '../components/Shelf.astro';
+import Hero from '../components/home/Hero.astro';
+import About from '../components/home/About.astro';
+import WritingSquare from '../components/home/WritingSquare.astro';
+import OpenQuestionsSquare from '../components/home/OpenQuestionsSquare.astro';
+import GallerySquare from '../components/home/GallerySquare.astro';
+import GlyphSquares from '../components/home/GlyphSquares.astro';
+import Spiral from '../components/home/Spiral.astro';
 ---
-<Base title="Josue Tapia Hernández">
-  <main><h1>Josue Tapia</h1></main>
+<Base title="Josue Tapia Hernández" description="Data Science and Mathematics at ITESM. I love researching and programming stuff.">
+  <main class="fib">
+    <Hero />
+    <About />
+    <WritingSquare />
+    <OpenQuestionsSquare />
+    <GallerySquare />
+    <GlyphSquares />
+    <Spiral />
+  </main>
+
+  <section class="shelf">
+    <div class="shelfhead"><span></span><div><i>§5 Bookshelf</i> <span class="g">— what I’m reading</span></div></div>
+    <Shelf variant="home" />
+  </section>
 </Base>
+
+<style is:global>
+  /* Shared cell chrome. :where() keeps specificity at one class so component styles win. */
+  .fib {
+    position: relative; width: 100%; aspect-ratio: 21 / 13; display: grid;
+    grid-template-columns: 13fr 2fr 1fr 5fr;
+    grid-template-rows: 8fr 1fr 1fr 3fr;
+    grid-template-areas:
+      "hero about about about"
+      "hero gal   now   writing"
+      "hero gal   end   writing"
+      "hero oq    oq    writing";
+  }
+  :where(.fib) .cell { position: relative; overflow: hidden; min-width: 0; min-height: 0; border-left: 1px solid var(--line); border-top: 1px solid var(--line); color: var(--ink); }
+  :where(.fib) .hero { grid-area: hero; }
+  :where(.fib) .about { grid-area: about; }
+  :where(.fib) .writing { grid-area: writing; }
+  :where(.fib) .oq { grid-area: oq; }
+  :where(.fib) .gal { grid-area: gal; }
+  :where(.fib) .now { grid-area: now; }
+  :where(.fib) .end { grid-area: end; }
+  :where(.fib) .n { position: absolute; top: 13px; right: 13px; font-size: 13px; font-style: italic; font-weight: 600; color: var(--gray); }
+  :where(.fib) .label { font-style: italic; color: var(--gray); margin-bottom: 13px; }
+  :where(.fib) a.cell:focus-visible { outline-offset: -2px; }
+  /* Hover: preview brightens, "Open →" fades in. */
+  :where(.fib) .pv, :where(.fib) .field { transition: opacity 0.3s, filter 0.3s; opacity: 0.85; }
+  :where(.fib) a.cell:hover :is(.pv, .field), :where(.fib) a.cell:focus-visible :is(.pv, .field) { opacity: 1; filter: brightness(1.15); }
+  :where(.fib) .open { position: absolute; right: 13px; bottom: 13px; font-style: italic; opacity: 0; transition: opacity 0.3s; }
+  :where(.fib) a.cell:hover .open, :where(.fib) a.cell:focus-visible .open { opacity: 1; }
+
+  section.shelf { margin-top: 55px; }
+  .shelfhead { display: grid; grid-template-columns: 34px 1fr; margin-bottom: 21px; }
+
+  @media (max-width: 899px) {
+    .fib {
+      aspect-ratio: auto;
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: none;
+      grid-template-areas: "hero hero" "about about" "writing writing" "oq oq" "gal gal" "now end";
+    }
+    /* Visible overflow lets aspect-ratio act as a minimum: content may grow the card. */
+    :where(.fib) .cell { overflow: visible; min-height: auto; border-left: none; }
+    :where(.fib) .hero { aspect-ratio: 13 / 8; overflow: hidden; }
+    :where(.fib) .about { aspect-ratio: 8 / 5; }
+    :where(.fib) .writing { aspect-ratio: 5 / 3; }
+    :where(.fib) .oq { aspect-ratio: 3 / 2; }
+    :where(.fib) .gal { aspect-ratio: 2 / 1; }
+    :where(.fib) .now, :where(.fib) .end { aspect-ratio: 1 / 1; }
+    :where(.fib) .end { border-left: 1px solid var(--line); }
+    .shelfhead { grid-template-columns: 1fr; }
+    .shelfhead > span { display: none; }
+  }
+</style>
