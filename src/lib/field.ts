@@ -29,9 +29,10 @@ export function grad(x: Vec, pts: Vec[], sigma: number): Vec {
 
 export const gridSpacing = (cssWidth: number): number => (cssWidth >= 900 ? 24 : 34);
 
-/** Idle drift of the orbit seed point; t in seconds. */
+/** Idle drift of the orbit seed point around c (the mock's rest point); t in seconds.
+ *  Small vertical amplitude keeps p off the D_n mirror axes so the orbit stays an even ring. */
 export const lissajous = (t: number, c: Vec, w: number, h: number): Vec =>
-  [c[0] + 0.25 * w * Math.sin(0.13 * t), c[1] + 0.18 * h * Math.sin(0.17 * t + 1)];
+  [c[0] + 0.05 * w * Math.sin(0.13 * t), c[1] + 0.025 * h * Math.sin(0.17 * t)];
 
 /** Background glows per phase. x of W, y of H, r of orbit radius R; color is "r,g,b", alpha the center opacity. All source-over. */
 export type Glow = { x: number; y: number; r: number; color: string; alpha: number };
@@ -44,20 +45,20 @@ export const GLOWS: Record<Phase, Glow[]> = {
   ],
   // White sun: higher, brighter core. Pending Josue's review (Task 10).
   midday: [
-    { x: 0.5, y: 0.32, r: 1.7, color: '255,250,240', alpha: 0.26 },
-    { x: 0.5, y: 0.24, r: 0.7, color: '255,253,248', alpha: 0.45 },
-    { x: 0.5, y: 0.24, r: 0.26, color: '255,255,255', alpha: 0.85 },
+    { x: 0.5, y: 0.32, r: 1.8, color: '255,250,240', alpha: 0.32 },
+    { x: 0.5, y: 0.24, r: 0.8, color: '255,253,248', alpha: 0.5 },
+    { x: 0.5, y: 0.24, r: 0.32, color: '255,255,255', alpha: 0.9 },
   ],
   // Golden, lower-right. Pending review.
   afternoon: [
-    { x: 0.6, y: 0.62, r: 1.8, color: '255,190,90', alpha: 0.5 },
-    { x: 0.64, y: 0.52, r: 0.72, color: '255,196,100', alpha: 0.5 },
-    { x: 0.64, y: 0.52, r: 0.28, color: '255,228,170', alpha: 0.55 },
+    { x: 0.6, y: 0.62, r: 1.8, color: '255,170,80', alpha: 0.55 },
+    { x: 0.64, y: 0.52, r: 0.72, color: '255,180,95', alpha: 0.5 },
+    { x: 0.64, y: 0.52, r: 0.3, color: '255,222,160', alpha: 0.68 },
   ],
   // Orange-pink ember, low and dim. Pending review.
   night: [
     { x: 0.5, y: 0.78, r: 1.7, color: '255,110,90', alpha: 0.4 },
     { x: 0.5, y: 0.7, r: 0.6, color: '255,118,92', alpha: 0.35 },
-    { x: 0.5, y: 0.7, r: 0.22, color: '255,170,140', alpha: 0.4 },
+    { x: 0.5, y: 0.7, r: 0.24, color: '255,170,140', alpha: 0.5 },
   ],
 };

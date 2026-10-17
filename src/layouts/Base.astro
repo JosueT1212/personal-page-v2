@@ -3,6 +3,9 @@ import Nav from '../components/Nav.astro';
 import Footer from '../components/Footer.astro';
 import ThemeHead from '../components/ThemeHead.astro';
 import '../styles/global.css';
+// Preloaded so the swap lands before first paint (mobile CLS was 0.076 from the font swap).
+import serifUrl from '@fontsource-variable/newsreader/files/newsreader-latin-opsz-normal.woff2?url';
+import serifItalicUrl from '@fontsource-variable/newsreader/files/newsreader-latin-opsz-italic.woff2?url';
 interface Props {
   title: string;
   description?: string;
@@ -17,9 +20,12 @@ const { title, description, current, bare = false, navVariant = 'leader' } = Ast
 <!doctype html>
 <html lang="en">
   <head>
-    <ThemeHead />
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <ThemeHead />
+    <link rel="preload" href={serifUrl} as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href={serifItalicUrl} as="font" type="font/woff2" crossorigin />
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3E%3Crect width='8' height='8' fill='%23FF6A1F'/%3E%3C/svg%3E" />
     {description && <meta name="description" content={description} />}
     <title>{title}</title>
   </head>

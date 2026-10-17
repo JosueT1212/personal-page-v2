@@ -7,18 +7,18 @@ type Theme = { from: Phase; to: Phase; t: number };
 const BUCKETS = 6;
 const IDLE_MS = 3000;
 
-/** 256² tile of ±13 grain: white/black pixels at |r|/128 alpha ≈ the mock's additive per-pixel noise. */
-function grainTile(): HTMLCanvasElement {
-  const tile = document.createElement('canvas');
-  tile.width = tile.height = 256;
-  const tc = tile.getContext('2d')!, img = tc.createImageData(256, 256), d = img.data;
-  for (let i = 0; i < d.length; i += 4) {
-    const r = (Math.random() - 0.5) * 26, v = r > 0 ? 255 : 0;
-    d[i] = d[i + 1] = d[i + 2] = v;
-    d[i + 3] = (Math.abs(r) / 128) * 255;
+/** Two opaque 256² tiles splitting the mock's additive ±13 grain: [lift, sink], each pixel's |r| in one, 0 in the other. */
+function grainTiles(): [HTMLCanvasElement, HTMLCanvasElement] {
+  const tiles = [0, 1].map(() => { const t = document.createElement('canvas'); t.width = t.height = 256; return t; });
+  const [lift, sink] = tiles.map((t) => t.getContext('2d')!.createImageData(256, 256));
+  for (let i = 0; i < lift.data.length; i += 4) {
+    const r = (Math.random() - 0.5) * 26, d = r > 0 ? lift.data : sink.data;
+    d[i] = d[i + 1] = d[i + 2] = Math.abs(r);
+    lift.data[i + 3] = sink.data[i + 3] = 255;
   }
-  tc.putImageData(img, 0, 0);
-  return tile;
+  tiles[0].getContext('2d')!.putImageData(lift, 0, 0);
+  tiles[1].getContext('2d')!.putImageData(sink, 0, 0);
+  return tiles as [HTMLCanvasElement, HTMLCanvasElement];
 }
 
 function radial(ctx: CanvasRenderingContext2D, x: number, y: number, r: number, color: string, alpha: number) {
@@ -31,6 +31,8 @@ function radial(ctx: CanvasRenderingContext2D, x: number, y: number, r: number, 
 }
 
 function initialTheme(): Theme {
+  const last = (window as any).__themeDetail as Theme | undefined; // themechange may fire before mount
+  if (last) return last;
   const p = document.documentElement.dataset.phase as Phase | undefined;
   const ph = p && PHASES.includes(p) ? p : 'dawn';
   return { from: ph, to: ph, t: 0 };
@@ -41,7 +43,7 @@ export function mountField(canvas: HTMLCanvasElement, opts: Opts = {}) {
   let group: Group = opts.group ?? 'D6';
   let sigmaFrac = opts.sigmaFrac ?? 0.09;
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const pattern = ctx.createPattern(grainTile(), 'repeat')!;
+  const [lift, sink] = grainTiles().map((t) => ctx.createPattern(t, 'repeat')!);
 
   let W = 0, H = 0, dpr = 1;
   let theme = initialTheme();
@@ -61,7 +63,7 @@ export function mountField(canvas: HTMLCanvasElement, opts: Opts = {}) {
 
     if (reduced) p = restPoint();
     else {
-      const goal = target && now - lastMove < IDLE_MS ? target : lissajous(now / 1000, c, W, H);
+      const goal = target && now - lastMove < IDLE_MS ? target : lissajous(now / 1000, restPoint(), W, H);
       p = [p[0] + (goal[0] - p[0]) * 0.15, p[1] + (goal[1] - p[1]) * 0.15];
     }
     const pts = orbit(p, c, group);
@@ -97,15 +99,20 @@ export function mountField(canvas: HTMLCanvasElement, opts: Opts = {}) {
       path.lineTo(x1 - ux * 3.2 - uy * 2.3, y1 - uy * 3.2 + ux * 2.3);
     }
     ctx.strokeStyle = '#fff'; ctx.lineWidth = 1.1; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
-    paths.forEach((path, i) => { ctx.globalAlpha = 0.18 + 0.55 * ((i + 0.5) / BUCKETS); ctx.stroke(path); });
+    paths.forEach((path, i) => { ctx.globalAlpha = 0.18 + 0.55 * (i / (BUCKETS - 1)); ctx.stroke(path); });
 
     ctx.globalAlpha = 1; ctx.fillStyle = '#fff';
     pts.forEach((q, i) => { ctx.beginPath(); ctx.arc(q[0], q[1], i ? 3.5 : 5, 0, 7); ctx.fill(); });
     ctx.lineWidth = 1.3; ctx.beginPath(); ctx.arc(p[0], p[1], 11, 0, 7); ctx.stroke();
 
+    // Exact additive grain: add lift; subtract sink as invert → add → invert.
     ctx.setTransform(1, 0, 0, 1, 0, 0);
-    ctx.fillStyle = pattern;
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    const cw = canvas.width, ch = canvas.height;
+    ctx.globalCompositeOperation = 'lighter'; ctx.fillStyle = lift; ctx.fillRect(0, 0, cw, ch);
+    ctx.globalCompositeOperation = 'difference'; ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, cw, ch);
+    ctx.globalCompositeOperation = 'lighter'; ctx.fillStyle = sink; ctx.fillRect(0, 0, cw, ch);
+    ctx.globalCompositeOperation = 'difference'; ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, cw, ch);
+    ctx.globalCompositeOperation = 'source-over';
   }
 
   const frame = (now: number) => { raf = 0; draw(now); schedule(); };
