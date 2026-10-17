@@ -1,6 +1,7 @@
+import { mulberry32 } from '../lib/covers';
 // Port of the mock's "lost" tile: hero-blue square, orange tangled "wavefunction", grain. Static; redrawn when the theme shifts.
 function draw(cv: HTMLCanvasElement) {
-  const c = cv.getContext('2d');
+  const c = cv.getContext('2d', { willReadFrequently: true });
   if (!c) return;
   const W = 72, H = 72;
   c.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--hero').trim() || '#3868f2';
@@ -16,8 +17,8 @@ function draw(cv: HTMLCanvasElement) {
   }
   c.globalAlpha = 0.85; c.stroke(); c.globalAlpha = 1;
   c.fillStyle = '#fff'; c.beginPath(); c.arc(36, 36, 2.6, 0, 7); c.fill();
-  const d = c.getImageData(0, 0, W, H), q = d.data;
-  for (let i = 0; i < q.length; i += 4) { const r = (Math.random() - 0.5) * 26; q[i] += r; q[i + 1] += r; q[i + 2] += r; }
+  const d = c.getImageData(0, 0, W, H), q = d.data, rand = mulberry32(72); // fixed seed: grain stays put across theme redraws
+  for (let i = 0; i < q.length; i += 4) { const r = (rand() - 0.5) * 26; q[i] += r; q[i + 1] += r; q[i + 2] += r; }
   c.putImageData(d, 0, 0);
 }
 

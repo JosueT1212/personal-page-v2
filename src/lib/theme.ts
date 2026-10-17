@@ -1,5 +1,8 @@
 import { getTimes } from 'suncalc';
-import { interpolate, formatHex } from 'culori';
+import { useMode, modeOklch, modeRgb, interpolate, formatHex } from 'culori/fn';
+
+useMode(modeRgb); // parses hex, backs formatHex
+useMode(modeOklch);
 import { PALETTES, PHASES, type Phase } from './palette';
 import src from '../scripts/phase-of.js?raw';
 

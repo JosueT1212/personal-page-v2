@@ -116,7 +116,7 @@ export function drawCover(canvas: HTMLCanvasElement, motif: { name: MotifName; s
   const dpr = dprOf();
   const W = canvas.clientWidth, H = canvas.clientHeight;
   canvas.width = W * dpr; canvas.height = H * dpr;
-  const c = canvas.getContext('2d')!;
+  const c = canvas.getContext('2d', { willReadFrequently: true })!;
   c.scale(dpr, dpr);
   c.fillStyle = m.bg; c.fillRect(0, 0, W, H);
   glow(c, W, H, m.ink ? 'multiply' : 'lighter', m.ink ? 'rgba(255,170,120,0.45)' : 'rgba(255,140,60,0.35)');
@@ -150,8 +150,8 @@ export function drawImageCover(canvas: HTMLCanvasElement, img: HTMLImageElement,
   const dpr = dprOf();
   const W = canvas.clientWidth, H = canvas.clientHeight;
   canvas.width = W * dpr; canvas.height = H * dpr;
-  const c = canvas.getContext('2d')!;
-  const s = Math.max(canvas.width / img.naturalWidth, canvas.height / img.naturalHeight) * 1.04; // 2% inset per edge: hides source borders
+  const c = canvas.getContext('2d', { willReadFrequently: true })!;
+  const s = Math.max(canvas.width / img.naturalWidth, canvas.height / img.naturalHeight) * 1.08; // 4% inset per edge: hides source borders and edge slivers
   const w = img.naturalWidth * s, h = img.naturalHeight * s;
   c.drawImage(img, (canvas.width - w) / 2, (canvas.height - h) / 2, w, h);
   const d = c.getImageData(0, 0, canvas.width, canvas.height), p = d.data;
