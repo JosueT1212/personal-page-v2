@@ -14,7 +14,7 @@ const page = byCat.filter((g) => g.items.length);
     <div class="items">
       {home.map((b) => (
         <div class="book">
-          <BookCover motif={b.motif} title={b.title} size="thumb" />
+          <BookCover motif={b.motif} title={b.title} cover={b.cover} size="thumb" />
           <div class="meta">
             {b.title}<br />
             <span class="g">{b.author}{b.status === 'reading' && <> · reading</>}</span>
@@ -29,7 +29,7 @@ const page = byCat.filter((g) => g.items.length);
     <ol>
       {g.items.map((b, i) => (
         <li class="leader-item book-entry">
-          <BookCover motif={b.motif} title={b.title} size="thumb" />
+          <BookCover motif={b.motif} title={b.title} cover={b.cover} size="thumb" />
           <div>
             <div class="leader-row"><span class="leader-title">{b.title}</span><span class="leader-dots"></span><span class="leader-num">{i + 1}</span></div>
             <p class="leader-meta">{b.author}{b.status === 'reading' && <> · <span class="note">reading</span></>}</p>

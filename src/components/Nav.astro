@@ -1,6 +1,7 @@
 ---
 import { getCollection } from 'astro:content';
-const { current } = Astro.props;
+interface Props { current?: string; variant?: 'home' | 'leader'; }
+const { current, variant = 'leader' } = Astro.props;
 const hasGallery = (await getCollection('gallery')).length > 0;
 const NUMERALS = ['I', 'II', 'III', 'IV'];
 const links = [
@@ -9,12 +10,14 @@ const links = [
   ['bookshelf', 'Bookshelf'],
   ['gallery', 'Gallery'],
 ].filter(([slug]) => slug !== 'gallery' || hasGallery);
-const home = Astro.url.pathname === '/';
+const home = variant === 'home';
 ---
 <header>
   {home ? <span></span> : <a class="back" href="/">← Josue Tapia</a>}
-  <nav>
-    {links.map(([slug, name], i) => (
+  <nav class={home ? 'plain' : undefined}>
+    {links.map(([slug, name], i) => home ? (
+      <a href={`/${slug}`} aria-current={slug === current ? 'page' : undefined}>{name}</a>
+    ) : (
       <a class="leader-row" href={`/${slug}`} aria-current={slug === current ? 'page' : undefined}>
         <span class="leader-title">{name}</span><span class="leader-dots"></span><span class="leader-num">{NUMERALS[i]}</span>
       </a>
@@ -22,6 +25,9 @@ const home = Astro.url.pathname === '/';
   </nav>
 </header>
 <style>
+  nav.plain { width: auto; align-items: flex-end; gap: 8px; }
+  nav.plain a { color: var(--ink); font-weight: 400; font-size: 17px; }
+  nav.plain a:hover { color: var(--label); }
   header { display: flex; justify-content: space-between; align-items: flex-start; gap: 21px; margin-bottom: 55px; }
   .back { color: var(--gray); font-style: italic; }
   .back:hover { color: var(--ink); }

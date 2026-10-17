@@ -9,8 +9,10 @@ interface Props {
   current?: 'writing' | 'open-questions' | 'bookshelf' | 'gallery';
   /** Omit Nav/Footer (full-screen pages like /field). */
   bare?: boolean;
+  /** 'home' = plain mock nav; default 'leader'. */
+  navVariant?: 'home' | 'leader';
 }
-const { title, description, current, bare = false } = Astro.props;
+const { title, description, current, bare = false, navVariant = 'leader' } = Astro.props;
 ---
 <!doctype html>
 <html lang="en">
@@ -22,7 +24,7 @@ const { title, description, current, bare = false } = Astro.props;
     <title>{title}</title>
   </head>
   <body>
-    {!bare && <Nav current={current} />}
+    {!bare && <Nav current={current} variant={navVariant} />}
     <slot />
     {!bare && <Footer />}
     <script>import '../scripts/theme-client.ts';</script>

@@ -94,25 +94,67 @@ export const MOTIFS: Record<MotifName, Motif> = {
   },
 };
 
+const dprOf = () => Math.min(window.devicePixelRatio || 1, 2);
+const glow = (c: Ctx, W: number, H: number, mode: GlobalCompositeOperation, stop: string) => {
+  c.globalCompositeOperation = mode;
+  const g = c.createRadialGradient(W * 0.5, H * 0.58, 0, W * 0.5, H * 0.58, W * 0.75);
+  g.addColorStop(0, stop); g.addColorStop(1, 'rgba(0,0,0,0)');
+  c.fillStyle = g; c.fillRect(0, 0, W, H);
+  c.globalCompositeOperation = 'source-over';
+};
+// grain 22, seeded; device-pixel space
+const grain = (c: Ctx, canvas: HTMLCanvasElement, rand: () => number) => {
+  c.setTransform(1, 0, 0, 1, 0, 0);
+  const d = c.getImageData(0, 0, canvas.width, canvas.height), p = d.data;
+  for (let i = 0; i < p.length; i += 4) { const r = (rand() - 0.5) * 22; p[i] += r; p[i + 1] += r; p[i + 2] += r; }
+  c.putImageData(d, 0, 0);
+};
+
 export function drawCover(canvas: HTMLCanvasElement, motif: { name: MotifName; seed?: number }): void {
   const m = MOTIFS[motif.name];
   const rand = mulberry32(motif.seed ?? hash(motif.name));
-  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  const dpr = dprOf();
   const W = canvas.clientWidth, H = canvas.clientHeight;
   canvas.width = W * dpr; canvas.height = H * dpr;
   const c = canvas.getContext('2d')!;
   c.scale(dpr, dpr);
   c.fillStyle = m.bg; c.fillRect(0, 0, W, H);
-  c.globalCompositeOperation = m.ink ? 'multiply' : 'lighter';
-  const g = c.createRadialGradient(W * 0.5, H * 0.58, 0, W * 0.5, H * 0.58, W * 0.75);
-  g.addColorStop(0, m.ink ? 'rgba(255,170,120,0.45)' : 'rgba(255,140,60,0.35)');
-  g.addColorStop(1, 'rgba(0,0,0,0)');
-  c.fillStyle = g; c.fillRect(0, 0, W, H);
-  c.globalCompositeOperation = 'source-over';
+  glow(c, W, H, m.ink ? 'multiply' : 'lighter', m.ink ? 'rgba(255,170,120,0.45)' : 'rgba(255,140,60,0.35)');
   m.draw(c, W, H, rand);
-  // grain 22, seeded; device-pixel space
-  c.setTransform(1, 0, 0, 1, 0, 0);
+  grain(c, canvas, rand);
+}
+
+export const luminance = (r: number, g: number, b: number) => (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255;
+
+const rgb = (hex: string): [number, number, number] => {
+  const n = parseInt(hex.trim().replace('#', ''), 16);
+  return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
+};
+
+/** 3-stop gradient map: lum 0 -> stops[0], 0.5 -> stops[1], 1 -> stops[2]. */
+export function tritone(lum: number, stops: [string, string, string]): [number, number, number] {
+  const [a, b, c] = stops.map(rgb);
+  const [from, to, t] = lum < 0.5 ? [a, b, lum * 2] : [b, c, (lum - 0.5) * 2];
+  return [0, 1, 2].map((k) => Math.round(from[k] + (to[k] - from[k]) * t)) as [number, number, number];
+}
+
+/** Real cover art in the mock's treatment: tritone (mids = mid) + 15% original + warm glow + grain. */
+export function drawImageCover(canvas: HTMLCanvasElement, img: HTMLImageElement, opts: { seed: string; mid: string }): void {
+  const dpr = dprOf();
+  const W = canvas.clientWidth, H = canvas.clientHeight;
+  canvas.width = W * dpr; canvas.height = H * dpr;
+  const c = canvas.getContext('2d')!;
+  const s = Math.max(canvas.width / img.naturalWidth, canvas.height / img.naturalHeight);
+  const w = img.naturalWidth * s, h = img.naturalHeight * s;
+  c.drawImage(img, (canvas.width - w) / 2, (canvas.height - h) / 2, w, h);
   const d = c.getImageData(0, 0, canvas.width, canvas.height), p = d.data;
-  for (let i = 0; i < p.length; i += 4) { const r = (rand() - 0.5) * 22; p[i] += r; p[i + 1] += r; p[i + 2] += r; }
+  const stops: [string, string, string] = ['#0A0A12', opts.mid, '#FFE2C8'];
+  for (let i = 0; i < p.length; i += 4) {
+    const t = tritone(luminance(p[i], p[i + 1], p[i + 2]), stops);
+    for (let k = 0; k < 3; k++) p[i + k] = t[k] * 0.85 + p[i + k] * 0.15;
+  }
   c.putImageData(d, 0, 0);
+  c.scale(dpr, dpr);
+  glow(c, W, H, 'lighter', 'rgba(255,140,60,0.35)');
+  grain(c, canvas, mulberry32(hash(opts.seed)));
 }

@@ -1,4 +1,4 @@
 [
-  {"id":"mans-search-for-meaning","title":"Man's Search for Meaning","author":"Viktor Frankl","category":"beyond","status":"reading","motif":{"name":"waves"}},
-  {"id":"art-of-doing-science-and-engineering","title":"The Art of Doing Science and Engineering","author":"Richard Hamming","category":"mathematics","status":"reading","motif":{"name":"primeSpiral"}}
+  {"id":"mans-search-for-meaning","title":"Man's Search for Meaning","author":"Viktor Frankl","category":"beyond","status":"reading","cover":"frankl-mans-search-for-meaning.jpg","motif":{"name":"waves"}},
+  {"id":"art-of-doing-science-and-engineering","title":"The Art of Doing Science and Engineering","author":"Richard Hamming","category":"mathematics","status":"reading","cover":"hamming-art-of-doing-science.jpg","motif":{"name":"primeSpiral"}}
 ]

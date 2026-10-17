@@ -1,9 +1,12 @@
 ---
-interface Props { motif: { name: string; seed?: number }; title: string; size: 'thumb' | 'large'; }
-const { motif, title, size } = Astro.props;
+interface Props { motif: { name: string; seed?: number }; title: string; size: 'thumb' | 'large'; cover?: string; }
+const { motif, title, size, cover } = Astro.props;
+const urls = import.meta.glob<string>('/src/assets/covers/*', { eager: true, query: '?url', import: 'default' });
+const url = cover ? urls[`/src/assets/covers/${cover}`] : undefined;
+if (cover && !url) throw new Error(`Missing cover file src/assets/covers/${cover} for "${title}"`);
 ---
 <div class={`cover ${size}`} role="img" aria-label={`Cover of ${title}`}>
-  <canvas data-motif={JSON.stringify(motif)}></canvas>
+  <canvas data-motif={JSON.stringify(motif)} data-cover={url} data-title={title}></canvas>
 </div>
 
 <style>

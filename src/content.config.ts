@@ -18,6 +18,7 @@ const books = defineCollection({
     author: z.string(),
     category: z.enum(['mathematics', 'chess', 'beyond']),
     status: z.enum(['reading', 'read']),
+    cover: z.string().optional(),
     motif: z.object({ name: z.string(), seed: z.number().optional() }),
   }),
 });
