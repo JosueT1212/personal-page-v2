@@ -1,0 +1,18 @@
+---
+import src from '../scripts/phase-of.js?raw';
+import { buildSunTable } from '../lib/theme';
+import { PALETTES } from '../lib/palette';
+const table = buildSunTable();
+const boot = `${src}
+(function () {
+  var TABLE = ${JSON.stringify(table)}, PAL = ${JSON.stringify(PALETTES)};
+  var ph = null;
+  try { ph = localStorage.getItem('theme-phase'); } catch (e) {}
+  if (!PAL[ph]) { var r = phaseOf(new Date(), TABLE); ph = r.t < 0.5 ? r.from : r.to; }
+  var el = document.documentElement;
+  el.dataset.phase = ph;
+  ['hero', 'ink', 'label', 'bg'].forEach(function (k) { el.style.setProperty('--' + k, PAL[ph][k]); });
+})();`;
+---
+<script is:inline set:html={boot} />
+<script is:inline type="application/json" id="sun-table" set:html={JSON.stringify(table)} />
