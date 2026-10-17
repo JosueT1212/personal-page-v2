@@ -9,7 +9,7 @@
   import { readOverride } from '../../lib/theme';
   const b = document.querySelector<HTMLButtonElement>('button.phase');
   const label = () => b?.setAttribute('aria-label', `Change theme: ${readOverride() ?? 'auto'}`);
-  b?.addEventListener('click', () => { (window as any).__cycleTheme?.(); label(); });
+  b?.addEventListener('click', () => { window.__cycleTheme?.(); label(); });
   label();
 </script>
 

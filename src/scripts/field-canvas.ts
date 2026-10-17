@@ -1,4 +1,4 @@
-import { orbit, gridSpacing, lissajous, GLOWS, type Group, type Vec, type Glow } from '../lib/field';
+import { orbit, gridSpacing, lissajous, restPoint as seedRest, fieldCenter, GLOWS, type Group, type Vec, type Glow } from '../lib/field';
 import { PHASES, type Phase } from '../lib/palette';
 
 type Opts = { group?: Group; sigmaFrac?: number; interactive?: boolean };
@@ -31,7 +31,7 @@ function radial(ctx: CanvasRenderingContext2D, x: number, y: number, r: number, 
 }
 
 function initialTheme(): Theme {
-  const last = (window as any).__themeDetail as Theme | undefined; // themechange may fire before mount
+  const last = window.__themeDetail; // themechange may fire before mount
   if (last) return last;
   const p = document.documentElement.dataset.phase as Phase | undefined;
   const ph = p && PHASES.includes(p) ? p : 'dawn';
@@ -51,19 +51,19 @@ export function mountField(canvas: HTMLCanvasElement, opts: Opts = {}) {
   let p: Vec = [0, 0], target: Vec | null = null, lastMove = -Infinity;
   let visible = true, raf = 0;
 
-  const center = (): Vec => [W * 0.5, H * 0.42];
-  const restPoint = (): Vec => [W * 0.75, H * 0.34]; // mock seed: c + [0.25W, −0.08H]
+  const center = (): Vec => fieldCenter(W, H);
+  const restPoint = (): Vec => seedRest(W, H);
 
   function draw(now: number) {
     if (!W || !H) return;
     const c = center();
     // ponytail: fixed reference radius (mock geometry) so glows don't collapse as the point nears the center
     const R = Math.hypot(0.25 * W, 0.08 * H);
-    const sigma = sigmaFrac * W, k = 1 / (2 * sigma * sigma);
+    const sigma = sigmaFrac * Math.min(W, H), k = 1 / (2 * sigma * sigma);
 
     if (reduced) p = restPoint();
     else {
-      const goal = target && now - lastMove < IDLE_MS ? target : lissajous(now / 1000, restPoint(), W, H);
+      const goal = target && now - lastMove < IDLE_MS ? target : lissajous(now / 1000, restPoint(), Math.min(W, H));
       p = [p[0] + (goal[0] - p[0]) * 0.15, p[1] + (goal[1] - p[1]) * 0.15];
     }
     const pts = orbit(p, c, group);
@@ -106,6 +106,8 @@ export function mountField(canvas: HTMLCanvasElement, opts: Opts = {}) {
     ctx.lineWidth = 1.3; ctx.beginPath(); ctx.arc(p[0], p[1], 11, 0, 7); ctx.stroke();
 
     // Exact additive grain: add lift; subtract sink as invert → add → invert.
+    // ponytail: 4 full-canvas composite passes ≈ 2.7 ms/frame at dpr 2; if frames drop, cache the grained
+    // background layer (redraw only on resize/theme) or composite grain at dpr 1.
     ctx.setTransform(1, 0, 0, 1, 0, 0);
     const cw = canvas.width, ch = canvas.height;
     ctx.globalCompositeOperation = 'lighter'; ctx.fillStyle = lift; ctx.fillRect(0, 0, cw, ch);
