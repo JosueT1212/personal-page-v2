@@ -1,0 +1,36 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import { STATUS_LABEL, latest } from '../../lib/content';
+const all = await getCollection('posts');
+const posts = latest(all, all.length);
+const published = posts.filter((p) => p.data.status === 'published').length;
+const fmt = (d: Date) => d.toLocaleDateString('en-US', { month: 'short', year: 'numeric', timeZone: 'UTC' });
+---
+<Base title="Writing · Josue Tapia" description="Notes on math and ML, written to understand them." current="writing">
+  <main>
+    <div class="page-intro">
+      <p class="label">§2 Writing</p>
+      <h1>Notes on math and ML, <span class="g">written to understand them.</span></h1>
+    </div>
+    <div class="leader-list">
+      <div class="leader-head"><span>All posts, newest first</span><span>{posts.length} posts · {published} published</span></div>
+      <ol>
+        {posts.map((p, i) => {
+          const live = p.data.status === 'published';
+          const label = live ? fmt(p.data.date) : STATUS_LABEL[p.data.status];
+          return (
+            <li class="leader-item">
+              <div class="leader-row">
+                {live ? <a class="leader-title" href={`/writing/${p.id}`}>{p.data.title}</a> : <span class="leader-title">{p.data.title}</span>}
+                <span class="leader-dots"></span><span class="leader-num">{i + 1}</span>
+              </div>
+              <p class="leader-meta">{label}{p.data.summary && <> · <span class="note">{p.data.summary}</span></>}</p>
+            </li>
+          );
+        })}
+      </ol>
+      <div class="leader-foot"><span>Only finished posts get a page.</span><span>Last updated {fmt(posts[0].data.date)}</span></div>
+    </div>
+  </main>
+</Base>

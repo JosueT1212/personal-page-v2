@@ -1,0 +1,43 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import { primes } from '../lib/content';
+const qs = (await getCollection('openQuestions')).map((q) => q.data);
+const nums = primes(qs.length);
+const understood = qs.filter((q) => q.status === 'understood').length;
+const DOT = { curious: 's0', reading: 's1', working: 's2', understood: 's3' } as const;
+const NAME = { curious: 'curious', reading: 'reading', working: 'working on', understood: 'understood' } as const;
+const UPDATED = 'Oct 2026'; // bump when editing src/data/open-questions.json
+---
+<Base title="Open questions · Josue Tapia" description="Things I don't understand yet but want to." current="open-questions">
+  <main>
+    <div class="page-intro">
+      <p class="label">§3 Open questions</p>
+      <h1>Things I don’t understand yet <span class="g">but want to.</span></h1>
+      <p class="legend">
+        {(['curious', 'reading', 'working', 'understood'] as const).map((s, i) => (
+          <>{i > 0 && <span aria-hidden="true">→</span>}<span><span class={`dot ${DOT[s]}`}></span>{NAME[s]}</span></>
+        ))}
+      </p>
+    </div>
+    <div class="leader-list">
+      <div class="leader-head"><span>Topics I want to explore</span><span>{qs.length - understood} open · {understood} understood</span></div>
+      <ol>
+        {qs.map((q, i) => (
+          <li class:list={['leader-item', { done: q.status === 'understood' }]}>
+            <div class="leader-row">
+              <span class="leader-title">{q.title}</span><span class="leader-dots"></span><span class="leader-num">{nums[i]}</span>
+            </div>
+            <p class="leader-meta">
+              <span class={`dot ${DOT[q.status]}`}></span>{NAME[q.status]}
+              {q.status === 'understood'
+                ? <> · <a class="note" href={`/writing/${q.post}`}>became a post →</a></>
+                : q.notes && <> · {q.link ? <a class="note" href={q.link}>{q.notes} →</a> : <span class="note">{q.notes}</span>}</>}
+            </p>
+          </li>
+        ))}
+      </ol>
+      <div class="leader-foot"><span>When a question is understood, it becomes a post in Writing.</span><span>Last updated {UPDATED}</span></div>
+    </div>
+  </main>
+</Base>

@@ -27,3 +27,33 @@ body { padding: 28px 34px 55px; }
 a { color: inherit; text-decoration: none; }
 :focus-visible { outline: 2px solid var(--orange); outline-offset: 2px; }
 @media (max-width: 899px) { body { padding-inline: 16px; } }
+
+/* Shared list style (docs/mocks/list-style.png): centered intro + dotted-leader rows. */
+.page-intro { text-align: center; padding: 21px 0 34px; border-bottom: 1px solid var(--line); margin-bottom: 55px; }
+.page-intro .label { color: var(--gray); font-style: italic; margin-bottom: 13px; }
+.page-intro h1 { font-size: 44px; line-height: 1.1; letter-spacing: -0.01em; font-weight: 500; }
+.legend { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-top: 21px; color: var(--gray); font-style: italic; font-size: 15px; }
+.leader-list { max-width: 60em; margin: 0 auto; list-style: none; }
+.leader-head, .leader-foot { display: flex; justify-content: space-between; gap: 21px; color: var(--gray); font-style: italic; font-size: 15px; }
+.leader-head { margin-bottom: 21px; }
+.leader-foot { margin-top: 55px; }
+.leader-item { list-style: none; padding-top: 34px; }
+.leader-row { display: flex; align-items: baseline; gap: 13px; }
+.leader-title { text-transform: uppercase; letter-spacing: 0.06em; font-size: 20px; color: var(--ink); }
+a.leader-title:hover, a .leader-title:hover { color: var(--label); }
+.leader-dots { flex: 1 1 21px; min-width: 21px; border-bottom: 1px dotted var(--gray); opacity: 0.85; transform: translateY(-0.3em); }
+.leader-num { font-style: italic; color: var(--ink); font-variant-numeric: lining-nums; }
+.leader-meta { margin-top: 8px; color: var(--gray); font-style: italic; font-size: 15px; }
+.leader-meta .note { color: var(--label); font-style: normal; }
+.leader-item.done .leader-title { color: var(--gray); text-decoration: line-through; }
+.dot { width: 9px; height: 9px; border-radius: 50%; display: inline-block; border: 1px solid var(--ink); margin-right: 6px; }
+.s0 { background: transparent; }
+.s1 { background: linear-gradient(90deg, var(--ink) 33%, transparent 33%); }
+.s2 { background: linear-gradient(90deg, var(--ink) 66%, transparent 66%); border-color: var(--orange); }
+.s3 { background: var(--ink); }
+.prose { max-width: 34em; margin: 0 auto; }
+.prose p + p { margin-top: 13px; }
+@media (max-width: 899px) {
+  .page-intro h1 { font-size: 34px; }
+  .leader-title { font-size: 17px; }
+}

@@ -1,0 +1,15 @@
+---
+import Base from '../layouts/Base.astro';
+import { Content, frontmatter } from '../content/now.md';
+const updated = new Date(frontmatter.updated).toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' });
+---
+<Base title="Now · Josue Tapia" description="What I'm doing now.">
+  <main>
+    <div class="page-intro">
+      <h1>Now</h1>
+    </div>
+    <div class="prose"><Content /></div>
+    <p class="prose g updated">Updated {updated}</p>
+  </main>
+</Base>
+<style>.updated { font-style: italic; margin-top: 34px; }</style>

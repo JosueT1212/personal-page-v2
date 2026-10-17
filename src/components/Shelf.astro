@@ -6,17 +6,15 @@ const { variant } = Astro.props;
 const books = (await getCollection('books')).map((b) => b.data);
 const CATS = [['mathematics', 'Mathematics'], ['chess', 'Chess'], ['beyond', 'Beyond']] as const;
 const byCat = CATS.map(([k, label]) => ({ label, items: books.filter((b) => b.category === k) }));
-// Home: one continuous grid (category order, no headings). Page: one section per non-empty category.
-const groups = variant === 'home' ? [{ label: '', items: byCat.flatMap((g) => g.items) }] : byCat.filter((g) => g.items.length);
-const size = variant === 'home' ? 'thumb' : 'large';
+const home = byCat.flatMap((g) => g.items);
+const page = byCat.filter((g) => g.items.length);
 ---
-{groups.map((g) => (
-  <section class={`shelf ${variant}`}>
-    {variant === 'page' && <h2>{g.label}</h2>}
+{variant === 'home' ? (
+  <section class="shelf home">
     <div class="items">
-      {g.items.map((b) => (
+      {home.map((b) => (
         <div class="book">
-          <BookCover motif={b.motif} title={b.title} size={size} />
+          <BookCover motif={b.motif} title={b.title} size="thumb" />
           <div class="meta">
             {b.title}<br />
             <span class="g">{b.author}{b.status === 'reading' && <> · reading</>}</span>
@@ -25,17 +23,31 @@ const size = variant === 'home' ? 'thumb' : 'large';
       ))}
     </div>
   </section>
+) : page.map((g) => (
+  <section class="leader-list">
+    <h2 class="leader-head"><span>{g.label}</span><span>{`${g.items.length} ${g.items.length === 1 ? 'book' : 'books'}`}</span></h2>
+    <ol>
+      {g.items.map((b, i) => (
+        <li class="leader-item book-entry">
+          <BookCover motif={b.motif} title={b.title} size="thumb" />
+          <div>
+            <div class="leader-row"><span class="leader-title">{b.title}</span><span class="leader-dots"></span><span class="leader-num">{i + 1}</span></div>
+            <p class="leader-meta">{b.author}{b.status === 'reading' && <> · <span class="note">reading</span></>}</p>
+          </div>
+        </li>
+      ))}
+    </ol>
+  </section>
 ))}
 <script>import '../scripts/covers-client.ts';</script>
 
 <style>
-  .items { display: grid; }
-  .home .items { grid-template-columns: repeat(3, 1fr); column-gap: 55px; row-gap: 21px; }
-  .page .items { grid-template-columns: repeat(auto-fill, minmax(233px, 1fr)); gap: 34px 55px; }
+  .items { display: grid; grid-template-columns: repeat(3, 1fr); column-gap: 55px; row-gap: 21px; }
   .home .book { display: grid; grid-template-columns: 42px 1fr; column-gap: 16px; align-items: center; }
-  .page .book { display: grid; grid-template-columns: 144px 1fr; column-gap: 21px; align-items: end; }
   .meta { font-size: 17px; }
   .meta .g { font-style: italic; }
-  h2 { font-size: 21px; font-weight: 500; margin: 55px 0 21px; }
-  @media (max-width: 899px) { .home .items { grid-template-columns: 1fr; } }
+  .book-entry { display: grid; grid-template-columns: 42px 1fr; column-gap: 21px; align-items: center; }
+  section.leader-list + section.leader-list { margin-top: 89px; }
+  h2.leader-head { font-weight: 450; }
+  @media (max-width: 899px) { .items { grid-template-columns: 1fr; } }
 </style>

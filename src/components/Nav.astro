@@ -2,21 +2,33 @@
 import { getCollection } from 'astro:content';
 const { current } = Astro.props;
 const hasGallery = (await getCollection('gallery')).length > 0;
+const NUMERALS = ['I', 'II', 'III', 'IV'];
 const links = [
   ['writing', 'Writing'],
   ['open-questions', 'Open questions'],
   ['bookshelf', 'Bookshelf'],
   ['gallery', 'Gallery'],
 ].filter(([slug]) => slug !== 'gallery' || hasGallery);
+const home = Astro.url.pathname === '/';
 ---
 <header>
+  {home ? <span></span> : <a class="back" href="/">← Josue Tapia</a>}
   <nav>
-    {links.map(([slug, name]) => (
-      <a href={`/${slug}`} style={slug === current ? 'color:var(--label)' : undefined}>{name}</a>
+    {links.map(([slug, name], i) => (
+      <a class="leader-row" href={`/${slug}`} aria-current={slug === current ? 'page' : undefined}>
+        <span class="leader-title">{name}</span><span class="leader-dots"></span><span class="leader-num">{NUMERALS[i]}</span>
+      </a>
     ))}
   </nav>
 </header>
 <style>
-  header { display: flex; justify-content: flex-end; text-align: right; margin-bottom: 55px; }
-  nav { display: flex; flex-direction: column; }
+  header { display: flex; justify-content: space-between; align-items: flex-start; gap: 21px; margin-bottom: 55px; }
+  .back { color: var(--gray); font-style: italic; }
+  .back:hover { color: var(--ink); }
+  nav { display: flex; flex-direction: column; gap: 8px; width: 330px; max-width: 60vw; }
+  nav .leader-title { font-size: 15px; }
+  nav .leader-num { font-style: normal; font-size: 15px; letter-spacing: 0.06em; }
+  nav [aria-current] .leader-title { color: var(--label); }
+  nav a:hover .leader-title { color: var(--label); }
+  @media (max-width: 899px) { nav { width: 220px; } nav .leader-title, nav .leader-num { font-size: 13px; } }
 </style>

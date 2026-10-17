@@ -1,0 +1,18 @@
+---
+import Base from './Base.astro';
+import 'katex/dist/katex.min.css';
+interface Props { title: string; date: Date; }
+const { title, date } = Astro.props;
+---
+<Base title={`${title} · Josue Tapia`} current="writing">
+  <article class="prose">
+    <h1>{title}</h1>
+    <p class="g date">{date.toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' })}</p>
+    <slot />
+  </article>
+</Base>
+<style>
+  h1 { font-size: 44px; line-height: 1.1; font-weight: 500; }
+  .date { font-style: italic; margin: 13px 0 34px; }
+  @media (max-width: 899px) { h1 { font-size: 34px; } }
+</style>
