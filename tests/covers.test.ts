@@ -1,4 +1,4 @@
-import { MOTIFS, mulberry32, tritone, luminance } from '../src/lib/covers';
+import { MOTIFS, mulberry32, tritone, luminance, stretchRange } from '../src/lib/covers';
 import books from '../src/data/books.json';
 test('every book uses a known motif', () => { for (const b of books) expect(MOTIFS).toHaveProperty(b.motif.name); });
 test('seeded PRNG is deterministic', () => {
@@ -17,4 +17,13 @@ test('tritone hits the three stops', () => {
 const files = import.meta.glob('../src/assets/covers/*');
 test('every book cover file exists', () => {
   for (const b of books as { cover?: string }[]) if (b.cover) expect(Object.keys(files)).toContain(`../src/assets/covers/${b.cover}`);
+});
+test('stretchRange finds percentile bounds', () => {
+  const v = Array.from({ length: 101 }, (_, i) => 0.1 + (i / 100) * 0.2);
+  const [lo, hi] = stretchRange(v);
+  expect(lo).toBeCloseTo(0.1, 1); expect(hi).toBeCloseTo(0.3, 1);
+});
+test('stretchRange on constant input never gives zero span', () => {
+  const [lo, hi] = stretchRange([0.4, 0.4, 0.4]);
+  expect(hi).toBeGreaterThan(lo);
 });

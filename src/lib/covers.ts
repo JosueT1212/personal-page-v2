@@ -131,6 +131,13 @@ const rgb = (hex: string): [number, number, number] => {
   return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
 };
 
+/** Percentile luminance bounds; span is never zero. */
+export function stretchRange(lums: Float32Array | number[], loPct = 0.02, hiPct = 0.98): [number, number] {
+  const a = Float32Array.from(lums).sort();
+  const lo = a[Math.floor(loPct * (a.length - 1))], hi = a[Math.ceil(hiPct * (a.length - 1))];
+  return hi - lo < 1e-6 ? [lo, lo + 1e-6] : [lo, hi];
+}
+
 /** 3-stop gradient map: lum 0 -> stops[0], 0.5 -> stops[1], 1 -> stops[2]. */
 export function tritone(lum: number, stops: [string, string, string]): [number, number, number] {
   const [a, b, c] = stops.map(rgb);
@@ -144,14 +151,18 @@ export function drawImageCover(canvas: HTMLCanvasElement, img: HTMLImageElement,
   const W = canvas.clientWidth, H = canvas.clientHeight;
   canvas.width = W * dpr; canvas.height = H * dpr;
   const c = canvas.getContext('2d')!;
-  const s = Math.max(canvas.width / img.naturalWidth, canvas.height / img.naturalHeight);
+  const s = Math.max(canvas.width / img.naturalWidth, canvas.height / img.naturalHeight) * 1.04; // 2% inset per edge: hides source borders
   const w = img.naturalWidth * s, h = img.naturalHeight * s;
   c.drawImage(img, (canvas.width - w) / 2, (canvas.height - h) / 2, w, h);
   const d = c.getImageData(0, 0, canvas.width, canvas.height), p = d.data;
   const stops: [string, string, string] = ['#0A0A12', opts.mid, '#FFE2C8'];
-  for (let i = 0; i < p.length; i += 4) {
-    const t = tritone(luminance(p[i], p[i + 1], p[i + 2]), stops);
-    for (let k = 0; k < 3; k++) p[i + k] = t[k] * 0.85 + p[i + k] * 0.15;
+  const lums = new Float32Array(p.length / 4);
+  for (let i = 0; i < lums.length; i++) lums[i] = luminance(p[i * 4], p[i * 4 + 1], p[i * 4 + 2]);
+  const [lo, hi] = stretchRange(lums);
+  const keep = hi - lo < 0.25 ? 0.35 : 0.15; // low-contrast art: let more of the original through
+  for (let i = 0; i < lums.length; i++) {
+    const t = tritone(Math.min(1, Math.max(0, (lums[i] - lo) / (hi - lo))), stops);
+    for (let k = 0; k < 3; k++) p[i * 4 + k] = t[k] * (1 - keep) + p[i * 4 + k] * keep;
   }
   c.putImageData(d, 0, 0);
   c.scale(dpr, dpr);
