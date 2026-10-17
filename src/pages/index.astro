@@ -20,7 +20,7 @@ import Spiral from '../components/home/Spiral.astro';
     <Spiral />
   </main>
 
-  <section class="shelf">
+  <section class="home-shelf">
     <div class="shelfhead"><span></span><div><i>§5 Bookshelf</i> <span class="g">— what I’m reading</span></div></div>
     <Shelf variant="home" />
   </section>
@@ -50,12 +50,13 @@ import Spiral from '../components/home/Spiral.astro';
   :where(.fib) .label { font-style: italic; color: var(--gray); margin-bottom: 13px; }
   :where(.fib) a.cell:focus-visible { outline-offset: -2px; }
   /* Hover: preview brightens, "Open →" fades in. */
-  :where(.fib) .pv, :where(.fib) .field { transition: opacity 0.3s, filter 0.3s; opacity: 0.85; }
+  :where(.fib) .pv, :where(.fib) .field { transition: opacity 0.3s, filter 0.3s; }
+  :where(.fib) .pv { opacity: 0.85; }
   :where(.fib) a.cell:hover :is(.pv, .field), :where(.fib) a.cell:focus-visible :is(.pv, .field) { opacity: 1; filter: brightness(1.15); }
   :where(.fib) .open { position: absolute; right: 13px; bottom: 13px; font-style: italic; opacity: 0; transition: opacity 0.3s; }
   :where(.fib) a.cell:hover .open, :where(.fib) a.cell:focus-visible .open { opacity: 1; }
 
-  section.shelf { margin-top: 55px; }
+  .home-shelf { margin-top: 55px; }
   .shelfhead { display: grid; grid-template-columns: 34px 1fr; margin-bottom: 21px; }
 
   @media (max-width: 899px) {

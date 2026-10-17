@@ -11,8 +11,8 @@ const at = new Map(nodes.map((n) => [n.k, n]));
       ? <><circle class="p" cx={n.x} cy={n.y} r="4" /><text x={n.x} y={n.y + 15}>{n.k}</text></>
       : <circle class="c" cx={n.x} cy={n.y} r="2.3" />)}
   </svg>
-  <span class="open g">Open →</span>
-  <span class="n">3</span>
+  <span class="open g" aria-hidden="true">Open →</span>
+  <span class="n" aria-hidden="true">3</span>
 </a>
 
 <style>

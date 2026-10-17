@@ -11,8 +11,8 @@ const posts = latest(await getCollection('posts'), 3).map(({ data }) => ({
   {posts.map((p) => (
     <div class="post">{p.title}{p.sub && <><br /><span class="g">{p.sub}</span></>}</div>
   ))}
-  <span class="open g">Open →</span>
-  <span class="n">5</span>
+  <span class="open g" aria-hidden="true">Open →</span>
+  <span class="n" aria-hidden="true">5</span>
 </a>
 
 <style>
