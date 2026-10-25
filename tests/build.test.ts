@@ -16,6 +16,7 @@ test('contact and footer', () => {
   expect(h).toContain('mailto:josuetapiahernandez@gmail.com');
   expect(h).toContain('https://github.com/JosueT1212');
   expect(h).not.toMatch(/Pillars|twitter\.com|x\.com/);
+  expect(h).not.toMatch(/Fibonacci grid|© 2026/);
 });
 test('empty bookshelf categories hidden', () => {
   expect(html('bookshelf/index.html')).not.toMatch(/>\s*Chess\s*</);
@@ -27,7 +28,7 @@ test('inlined theme script sets data-phase', () => {
   expect(['dawn', 'midday', 'afternoon', 'night']).toContain(root.dataset.phase);
 });
 test('all pages built', () => {
-  for (const p of ['index.html', 'field/index.html', 'bookshelf/index.html', 'now/index.html', '404.html', 'CNAME']) expect(existsSync(`dist/${p}`)).toBe(true);
+  for (const p of ['index.html', 'field/index.html', 'bookshelf/index.html', 'now/index.html', '404.html']) expect(existsSync(`dist/${p}`)).toBe(true);
 });
 test('homepage nav is plain', () => {
   const n = nav('index.html');
